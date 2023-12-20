@@ -4,3 +4,8 @@ ASSET_TYPES = {
     "FO" : "Futures & Options",
     "CMD" : "Commodity"
 }
+
+TRANSACTION_TYPE = {
+    'BUY': "Buy", 
+    'SELL': "Sell"
+}
