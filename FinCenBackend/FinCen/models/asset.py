@@ -5,7 +5,7 @@ from ..constants.db_constants import *
 
 class Asset(models.Model):
     asset_id = models.BigAutoField(primary_key=True)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     symbol = models.CharField(max_length=200)
     asset_type = models.CharField(max_length=10, choices=ASSET_TYPES)
     quantity = models.IntegerField()
