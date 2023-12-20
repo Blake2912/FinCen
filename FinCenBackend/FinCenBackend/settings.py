@@ -77,12 +77,12 @@ WSGI_APPLICATION = 'FinCenBackend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'FinCen',
-        'USER': 'kcvarun',
+        'USER': 'root',
         'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'HOST':'localhost',
+        'PORT':'3306',
     }
 }
 
