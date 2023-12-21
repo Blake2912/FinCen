@@ -1,7 +1,6 @@
 from ..serializers import *
 from ..models import *
 from rest_framework.views import APIView
-from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework import status
 from ..util import ResponseUtil
@@ -18,8 +17,7 @@ class RegisterUser(APIView):
     )
     def post(self, request):
         try:
-            request_data = JSONParser().parse(request)
-            serializer = RegisterSerializer(data=request_data)
+            serializer = RegisterSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response("User Registered Successfully" ,status=status.HTTP_201_CREATED)
@@ -31,19 +29,24 @@ class RegisterUser(APIView):
 
 class LoginUser(APIView):
     @swagger_auto_schema(
-    request_body=LoginSerializer,
-    responses={200: "Ok", 500: "Internal server error", 400: "Bad Request", 401: "Unauthorized"},
-)
+        request_body=LoginSerializer,
+        responses={200: "Ok", 500: "Internal server error", 400: "Bad Request", 401: "Unauthorized"}
+    )
     def post(self, request):
         try:
-            request_data = JSONParser().parse(request)
-            user_name = request_data['user_name']
+            # Validate
+            try:
+                user_name = request.data[nameof(User.user_name)]
+                password = request.data[nameof(User.password)]
+            except:
+                return Response("Invalid Parameters passed!", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            # Process and return
             try:
                 user = User.objects.get(user_name=user_name)
             except:
                 return Response("User not found", status=status.HTTP_400_BAD_REQUEST)
             if user is not None:
-                if check_password(request_data[nameof(User.password)], user.password):
+                if check_password(password, user.password):
                     return Response({nameof(user.api_key): user.api_key}, status=status.HTTP_200_OK)
                 return Response("Username or password is wrong", status=status.HTTP_401_UNAUTHORIZED)
             return Response("User not found", status=status.HTTP_400_BAD_REQUEST)
