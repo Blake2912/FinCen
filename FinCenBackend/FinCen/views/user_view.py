@@ -6,6 +6,8 @@ from rest_framework import status
 from ..util import ResponseUtil
 from drf_yasg.utils import swagger_auto_schema
 from django.contrib.auth.hashers import check_password
+from drf_yasg import openapi
+from django.forms.models import model_to_dict
 
 
 class RegisterUser(APIView):
@@ -24,7 +26,6 @@ class RegisterUser(APIView):
             return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as err:
             return Response(type(err), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 
 class LoginUser(APIView):
@@ -53,4 +54,29 @@ class LoginUser(APIView):
 
         except Exception as err:
             return Response(ResponseUtil.create_generic_response(status.HTTP_500_INTERNAL_SERVER_ERROR, type(err), err), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
+
+class GetUser(APIView):
+    api_key = openapi.Parameter('api_key', openapi.IN_QUERY, type=openapi.TYPE_STRING)
+    @swagger_auto_schema(
+        manual_parameters=[api_key],
+        response={200: "Ok"}
+    )
+    def get(self, request):
+        try:
+            # Validate
+            try:
+                api_key = request.query_params.get(nameof(User.api_key))
+            except:
+                return Response("Invalid Parameters passed!", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            try:
+                user = User.objects.get(api_key=api_key)
+                print("Got user")
+                if user is not None:
+                    print("Inside user is not none")
+                    response = model_to_dict(user)
+                    return Response(response, status=status.HTTP_200_OK)
+            except:
+                return Response("API", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as err:
+            return Response(ResponseUtil.create_generic_response(status.HTTP_500_INTERNAL_SERVER_ERROR, type(err), err), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
