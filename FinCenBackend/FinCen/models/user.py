@@ -6,7 +6,7 @@ class User(models.Model):
     user_name = models.CharField(max_length=500, unique=True)
     first_name = models.CharField(max_length=250)
     last_name = models.CharField(max_length=250)
-    password_hash = models.CharField(max_length=500)
+    password = models.CharField(max_length=500)
     email = models.CharField(max_length=250, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -17,6 +17,6 @@ class User(models.Model):
         return self.first_name + ' ' + self.last_name
     
     def save(self, *args, **kwargs):
-        self.password_hash = make_password(self.password_hash)
+        self.password = make_password(self.password)
         self.api_key = CommonUtil.generate_api_key() 
         super(User, self).save(*args, **kwargs)
