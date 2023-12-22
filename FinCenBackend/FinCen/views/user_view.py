@@ -64,7 +64,6 @@ class GetUser(APIView):
     )
     def get(self, request):
         try:
-            # Validate
             try:
                 api_key = request.query_params.get(nameof(User.api_key))
             except:
@@ -74,9 +73,12 @@ class GetUser(APIView):
                 print("Got user")
                 if user is not None:
                     print("Inside user is not none")
-                    response = model_to_dict(user)
-                    return Response(response, status=status.HTTP_200_OK)
-            except:
-                return Response("API", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    serializer_class = UserResponseSerializer(data=model_to_dict(user))
+                    if serializer_class.is_valid():
+                        return Response(serializer_class.data, status=status.HTTP_200_OK)
+                    return Response(serializer_class.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            except Exception as err:
+                return Response(type(err), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as err:
             return Response(ResponseUtil.create_generic_response(status.HTTP_500_INTERNAL_SERVER_ERROR, type(err), err), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
