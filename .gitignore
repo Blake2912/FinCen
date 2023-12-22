@@ -3,3 +3,4 @@ FinCenBackend/FinCenBackend/__pycache__
 FinCenBackend/FinCen/*/__pycache__
 FinCenBackend/FinCen/__pycache__
 .DS_Store
+.vscode/
