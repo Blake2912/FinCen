@@ -60,7 +60,7 @@ class GetUser(APIView):
     api_key = openapi.Parameter('api_key', openapi.IN_QUERY, type=openapi.TYPE_STRING)
     @swagger_auto_schema(
         manual_parameters=[api_key],
-        response={200: "Ok"}
+        response={200: "Ok", 500 : "Internal Server error"}
     )
     def get(self, request):
         try:
@@ -70,7 +70,6 @@ class GetUser(APIView):
                 return Response("Invalid Parameters passed!", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             try:
                 user = User.objects.get(api_key=api_key)
-                print("Got user")
                 if user is not None:
                     print("Inside user is not none")
                     serializer_class = UserResponseSerializer(data=model_to_dict(user))
