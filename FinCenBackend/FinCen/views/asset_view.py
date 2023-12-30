@@ -69,6 +69,28 @@ class AddAsset(APIView):
                 return Response(f"Errors: {asset_serializer.errors}", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             return Response("Unauthorized", status=status.HTTP_401_UNAUTHORIZED)
 
+        except Exception as err:
+            return Response(ResponseUtil.create_generic_response(status.HTTP_500_INTERNAL_SERVER_ERROR, type(err), err), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class GetAllAssets(APIView):
+    api_key = openapi.Parameter('api_key', openapi.IN_QUERY, type=openapi.TYPE_STRING)
+    @swagger_auto_schema(
+        manual_parameters=[api_key],
+        response={ 200: "Ok", 401: "Unauthorized", 400: "Bad request" }
+    )
+    def get(self, request):
+        try:
+            try:
+                api_key = request.query_params.get(nameof(User.api_key))
+                user = User.objects.get(api_key=api_key)
+            except:
+                return Response("Validation Error", status=status.HTTP_400_BAD_REQUEST)
             
+            if user is not None:
+                assets = Asset.objects.filter(user=user.id).values()
+                return Response(assets, status.HTTP_200_OK)
+            return Response("Unauthorized", status=status.HTTP_401_UNAUTHORIZED)
+        
         except Exception as err:
             return Response(ResponseUtil.create_generic_response(status.HTTP_500_INTERNAL_SERVER_ERROR, type(err), err), status=status.HTTP_500_INTERNAL_SERVER_ERROR)

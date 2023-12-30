@@ -6,5 +6,6 @@ urlpatterns = [
     path('Login', LoginUser.as_view()),
     path('User', GetUser.as_view()),
     path('Asset', AssetInfo.as_view()),
-    path('AddAsset', AddAsset.as_view())
+    path('AddAsset', AddAsset.as_view()),
+    path('GetAllAssets', GetAllAssets.as_view())
 ]
